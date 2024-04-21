@@ -1,0 +1,316 @@
+@startuml project
+
+class StatsManager {
+    + {static} INSTANCE : StatsManager
+    - attributeNames : List<String>
+    - traitNames : List<String>
+    - combatStatNames : List<String>
+    - StatsManager()
+    + getRandomAttributeName() : String
+    + getRandomTraitName() : String
+    + getAttributeNames() : List<String>
+    + getTraitNames() : List<String>
+    + getCombatStatNames() : List<String>
+}
+
+abstract class BaseStat <<abstract class>> {
+    - statName : String
+    - baseValue : int
+    - staticModifier : int
+    - dynamicModifier : int
+    # BaseStat(String, int)
+    + getStatName() : String
+    + getBaseValue() : int
+    + getModifiedValue() : int
+    + getTotalModifier() : int
+    + getStaticModifier() : int
+    + adjustStaticModifier(int)
+    + adjustDynamicModifier(int)
+    + resetDynamicModifier()
+    + toString() : String
+}
+
+class Attribute {
+    + Attribute(String, int)
+}
+
+class Trait {
+    + Trait(String, int)
+}
+
+class CombatStat {
+    - attributeReliance : BaseStat
+    - traitReliance : BaseStat
+    + CombatStat(String, BaseStat, BaseStat)
+    + getBaseValue() : int
+}
+
+class GearManager {
+    + {static} INSTANCE : GearManager
+    - weapons : Map<String, List<Weapon>>
+    - armorPieces : Map<String, List<Armor>>
+    - GearManager()
+    + getAllMappedArmorPieces() : Map<String, List<Armor>>
+    + getAllMappedWeapons() : Map<String, List<Weapon>>
+    + getWeaponsOfType(String) : List<Weapon>
+    + getRandomWeapon(Class<?>) : Weapon
+    + getRandomWeapon(List<String>) : Weapon
+    + getRandomOneHandedWeapon(Class<?>) : Weapon
+    + getRandomOneHandedWeapon(List<String>) : Weapon
+    + getAllArmorForRestriction(Class<?>) : List<Armor>
+    + getRandomArmorOfType(String, Class<?>) : Armor
+}
+
+abstract class BaseGear <<abstarct class>> {
+    - type : String
+    - gearName : String
+    - classRestrictions : List<Class<?>>
+    # BaseGear(String, String, String)
+    + getType() : String
+    + getClassRestrictions() : List<Class<?>>
+    + checkClassRestriction(Class<?>) : boolean
+    + {abstract} getStat() : BaseStat
+    + toString() : String
+}
+
+class Armor {
+    - protection : int
+    - material : String
+    - trait : Trait
+    + Armor(Map<String, String>)
+    + getProtection() : int
+    + getMaterial() : String
+    + getStat() : BaseStat
+    + toString() : String
+}
+
+class Weapon {
+    - damage : int
+    - wield : String
+    - attribute : Attribute
+    + Weapon(Map<String, String>)
+    + getDamage() : int
+    + getWield() : String
+    + getStat() : BaseStat
+    + isTwoHanded() : boolean
+    + toString() : String
+}
+
+abstract class BaseAbility <<abstract class>> {
+    - actionPointCost : int
+    - energyCost : int
+    # BaseAbility(int, int)
+    # performAbility(String, int, int, boolean) : boolean
+    + getActionPointCost() : int
+    + getEnergyCost() : int
+    + {abstract} isMagic() : boolean
+    + {abstract} isHeal() : boolean
+    + {abstract} getAmountOfTargets() : int
+    + {abstract} execute(int, boolean) : boolean
+}
+
+class HeavyAttack {
+    + HeavyAttack()
+    + toString() : String
+}
+
+class FocusedShot {
+    + FocusedShot()
+    + toString() : String
+}
+
+class WeaponAttack {
+    + WeaponAttack()
+    + toString() : String
+}
+
+class Whirlwind {
+    + Whirlwind()
+    + toString() : String
+}
+
+class SprayOfArrows {
+    + SprayOfArrows()
+    + toString() : String
+}
+
+class FocusedHeal {
+    - magicalPhrase : String
+    + FocusedHeal()
+    + toString() : String
+}
+
+class GroupHeal {
+    - magicalPhrase : String
+    + GroupHeal()
+    + toString() : String
+}
+
+class ElementalBolt {
+    - magicalPhrase : String
+    - element : String
+    + ElementalBolt(String)
+    + toString() : String
+}
+
+class ElementalBlast {
+    - magicalPhrase : String
+    - element : String
+    + ElementalBlast(String)
+    + toString() : String
+}
+
+abstract class BaseCharacter <<abstract class>> {
+    - characterStats : CharacterStats
+    - equipment : CharacterEquipment
+    - abilities : List<BaseAbility>
+    # BaseCharacter(CharacterStats)
+    # addAbilities(List<BaseAbility>)
+    # getTurnInformation(String) : String
+    # executeActions(boolean)
+    - determineActions() : Deque<BaseAbility>
+    + registerDamage(int, boolean) : List<Integer>
+    + registerHealing(int) : int
+    + roundReset()
+    + {abstract} doTurn()
+    + toString() : String
+    + {abstract} getCharacterName() : String
+    + getCharacterStats() : CharacterStats
+    + getEquipment() : CharacterEquipment
+    + getActionPoints : int
+    + getHitPoints : int
+    + getEnergyLevel : int
+    + getAbilities() : List<BaseAbility>
+    + isDead() : boolean
+}
+
+abstract class BaseHero <<abstract class>> {
+    - characterName : String
+    # BaseHero(String, List<Integer>)
+    # equipHero(Class<?>)
+    + resetHeroStats()
+    + getCharacterName() : String
+    + doTurn()
+}
+
+class Cleric {
+    + Cleric(String)
+}
+
+class Ranger {
+    + Ranger(String)
+}
+
+class Warrior {
+    + Warrior(String)
+}
+
+class Wizard {
+    + Wizard(String)
+}
+
+abstract class BaseEnemy <<abstract class>> {
+    - characterName : String
+    # BaseEnemy(String, List<Integer>)
+    # equipEnemy(List<String>)
+    + getCharacterName() : String
+    + doTurn()
+}
+
+class SkeletonWarrior {
+    + SkeletonWarrior(int)
+}
+
+class SkeletonArcher {
+    + SkeletonArcher(int)
+}
+
+class SkeletonMage {
+    + SkeletonMage(int)
+}
+
+class LichLord {
+    + LichLord()
+}
+
+class CharacterEquipment {
+    - weapons : List<Weapon>
+    - armorPieces : Map<String, Armor>
+    + getWeapons : List<Weapon>
+    + getArmorPieces : List<Armor>
+    + getTotalWeaponDamage() : int
+    + getTotalArmorProtection() : int
+    + amountOfEmptyWeaponSlots() : int
+    + amountOfEmptyArmorSlots() : int
+    + addWeapon(Weapon) : boolean
+    + addArmorPiece(String, Armor) : boolean
+    + toString() : String
+}
+
+class CharacterStats {
+    - stats : Map<String, BaseStat>
+    + CharacterStats(List<Integer>)
+    + toString() : String
+    + getStat(String) : BaseStat
+    + getStatValue(String) : int
+    + getTotalActionPoints() : int
+    + getCurrentActionPoints() : int
+    + getTotalHitPoints() : int
+    + getCurrentHitPoints() : int
+    + getTotalEnergyLevel() : int
+    + getCurrentEnergyLevel() : int
+    + getDefenceRate() : int
+    + getAttackRate() : int
+    + getPhysicalPower() : int
+    + getMagicPower() : int
+    + getHealingPower() : int
+    + adjustActionPoints(int)
+    + adjustHitPoints(int)
+    + adjustEnergyLevel(int)
+    + adjustStatStaticModifier(String, int)
+    + adjustStatDynamicModifier(String, int)
+    + resetActionPoints()
+    + resetHitPoints()
+    + resetEnergyLevel()
+}
+
+class ActivityLogger {
+    + {static} INSTANCE : ActivityLogger
+    - logger : Logger
+    - ActivityLogger()
+    - delayExecution()
+    - performLog(String)
+    + logRoundInfo(String)
+    + logTurnInfo(String)
+    + logAttack(String)
+    + logDamage(String)
+    + logDeath(String)
+    + logHealing(String)
+}
+
+BaseStat <|.. Attribute
+BaseStat <|.. Trait
+BaseStat <|.. CombatStat
+BaseGear <|.. Armor
+BaseGear <|.. Weapon
+BaseAbility <|.. HeavyAttack
+BaseAbility <|.. FocusedShot
+BaseAbility <|.. WeaponAttack
+BaseAbility <|.. Whirlwind
+BaseAbility <|.. SprayOfArrows
+BaseAbility <|.. FocusedHeal
+BaseAbility <|.. GroupHeal
+BaseAbility <|.. ElementalBolt
+BaseAbility <|.. ElementalBlast
+BaseCharacter <|.. BaseHero
+BaseCharacter <|.. BaseEnemy
+BaseHero <|.. Cleric
+BaseHero <|.. Ranger
+BaseHero <|.. Warrior
+BaseHero <|.. Wizard
+BaseEnemy <|.. SkeletonWarrior
+BaseEnemy <|.. SkeletonArcher
+BaseEnemy <|.. SkeletonMage
+BaseEnemy <|.. LichLord
+
+@enduml
